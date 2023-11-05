@@ -1,0 +1,63 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  gap: 5px;
+}
+
+.canvas {
+  flex: 1;
+  outline: 1px solid red;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.tile {
+  position: static;
+  width: 20%; /* to have 5 items in a a row */
+  height: fit-content;
+  cursor: grab;
+  resize: both;
+  overflow: scroll;
+  /* border: 1px solid red; */
+}
+
+.tile.dragged {
+  position: absolute;
+}
+
+/* <img />, <video /> */
+.media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border: 1px solid red;
+}
+
+.media.unmounted {
+  display: none;
+}
+  
