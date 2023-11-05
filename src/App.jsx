@@ -1,4 +1,7 @@
 import React from 'react';
+
+import useDragger from "./useDragger";
+
 import './style.css';
 
 const links = [
@@ -24,38 +27,35 @@ export const Canvas = (props) => {
   return <div className="canvas">{props.children}</div>;
 };
 
-// export const getAspectRatio = (image) => {
-//   const w = image.naturalWidth;
-//   const h = image.naturalHeight;
-//   return w > h ? w / h : h / w;
-// };
-
 // Add strategy for img and video
 export const MediaHolder = (props) => {
-  const [aspectRatio, setAspectRatio] = React.useState(undefined);
-  const mediaHolderRef = React.useRef(null);
+  const ref = React.useRef(null);
   const mediaRef = React.useRef(null);
 
   const videoReg = new RegExp(/https?:\/\/.*\.(?:mp4)/i);
 
   const onLoad = () => {
-    if (mediaHolderRef.current?.classList.contains('unmounted')) {
-      mediaHolderRef.current?.classList.remove('unmounted');
+    if (ref.current?.classList.contains('unmounted')) {
+      ref.current?.classList.remove('unmounted');
     }
 
-    setAspectRatio(`${mediaRef.current.naturalWidth} / ${mediaRef.current.naturalHeight}`)
-
-    mediaHolderRef.current?.style.setProperty('aspect-ratio', `${mediaRef.current.naturalWidth} / ${mediaRef.current.naturalHeight}`);
+    ref.current?.style.setProperty('aspect-ratio', `${mediaRef.current.naturalWidth} / ${mediaRef.current.naturalHeight}`);
   };
 
   const onError = () => {
-    if (!mediaHolderRef?.current?.classList.contains('unmounted')) {
-      mediaHolderRef?.current?.classList.add('unmounted');
+    if (!ref?.current?.classList.contains('unmounted')) {
+      ref?.current?.classList.add('unmounted');
     }
   };
 
+  useDragger(ref);
+
   return (
-    <div className="tile" ref={mediaHolderRef} style={{aspectRatio}}>
+    <div
+      className="tile"
+      ref={ref}
+      onPointerDown={(e) => !e.target.classList.contains('dragged') && e.target.classList.add('dragged')}
+    >
       {videoReg.test(props.src) ? (
         <video
           className="media"
