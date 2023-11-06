@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-function useDragger(ref) {
+export const useDragger = (ref) => {
   const isClicked = useRef(false);
 
   const coords = useRef({
@@ -30,7 +30,7 @@ function useDragger(ref) {
     }
 
     const onMouseMove = (e) => {
-      if (e.target.closest( '.resizer' )) return;
+      if (e.target.closest( '[data-draggable="false"]' )) return;
       if (!isClicked.current) return;
 
       const nextX = e.clientX - coords.current.startX + coords.current.lastX;
@@ -52,7 +52,4 @@ function useDragger(ref) {
       container.removeEventListener('mouseleave', onMouseUp);
     };
   }, []);
-
 }
-
-export default useDragger;

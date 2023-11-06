@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-function useResizer(ref) {
+export const useResizer = (ref) => {
   const drag = useRef({ x: "", y: "", active: false });
   const dims = useRef({ w: 0, h: 0 });
 
@@ -53,5 +53,3 @@ function useResizer(ref) {
     };
   }, []);
 }
-
-export default useResizer;

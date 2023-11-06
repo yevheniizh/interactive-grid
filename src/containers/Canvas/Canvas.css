@@ -1,0 +1,17 @@
+.canvas-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex: 1;
+  outline: 1px solid red;
+  padding: 10px;
+}
+
+.canvas {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+  

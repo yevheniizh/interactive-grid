@@ -1,0 +1,18 @@
+.resize-handler {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background-color: rgb(31, 137, 229);
+  border-radius: 50%;
+  border: 1px solid white;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  cursor: nwse-resize;
+}
+
+.resize-handler:hover {
+  background-color: rgb(13, 72, 161);
+}

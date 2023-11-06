@@ -1,8 +1,11 @@
 import { createContext, useContext, useReducer } from 'react';
 
-import newId from './newid.util';
+import { IdUtil } from '../../utils/id.util';
+import { isVideoUrl } from '../../utils/common.util';
 
-const links = [
+const urlIdUtil = new IdUtil();
+
+const mockLinks = [
   'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/avatar2-trailer-short.mp4',
   'https://sjc1.vultrobjects.com/moments/demo/retail/1.jpg',
   'https://sjc1.vultrobjects.com/moments/ads/square-emoji.png',
@@ -12,21 +15,28 @@ const links = [
   'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/coca-cola-short.mp4',
 ];
 
-/* ******* */
 
-const CanvasContext = createContext( {} );
 
+/* CONTEXT */
+const AppContext = createContext( {} );
+
+
+
+/* TYPES */
 const types = {
   ADD_URL: "ADD_URL",
   REMOVE_URL: "REMOVE_URL",
 };
 
+
+
+/* REDUCER */
 const reducer = ( state, action ) => {
   switch ( action.type ) {
     case types.ADD_URL:
       return ({
         ...state,
-        urls: [ ...state.urls, { id: newId(), url: action.payload } ]
+        urls: [ ...state.urls, { id: urlIdUtil.generateId(), url: action.payload } ]
       });
     case types.REMOVE_URL:
       return ({
@@ -38,27 +48,42 @@ const reducer = ( state, action ) => {
   }
 }
 
+
+
+/* STATE */
 const initialState = {
   urls: [
-    { id: newId(), url: links[5] },
-    { id: newId(), url: links[6] },
+    { id: urlIdUtil.generateId(), url: mockLinks[5] }, // To be removed
+    { id: urlIdUtil.generateId(), url: mockLinks[6] }, // To be removed
   ],
 };
 
-export const CanvasProvider = ( { children } ) => {
+
+
+/* PROVIDER */
+export const AppProvider = ( { children } ) => {
   const [state, dispatch] = useReducer( reducer, initialState );
 
   const value = {
-    urls:      state.urls,
+    // State
+    urls: state.urls,
+
+    // Actions
     addUrl:    ( url ) => dispatch( { type: types.ADD_URL, payload: url } ),
-    removeUrl: ( index ) => dispatch( { type: types.REMOVE_URL, payload: index } ),
+    removeUrl: ( id ) => dispatch( { type: types.REMOVE_URL, payload: id } ),
+
+    // Selectors
+    selectVideoUrls: () => state.urls.filter( ( { url } ) => isVideoUrl( url ) ),
    };
 
   return (
-    <CanvasContext.Provider value={value}>
+    <AppContext.Provider value={value}>
       {children}
-    </CanvasContext.Provider>
+    </AppContext.Provider>
   );
 };
 
-export const useCanvasContext = () => useContext( CanvasContext );
+
+
+/* HOOK */
+export const useAppContext = () => useContext( AppContext );
