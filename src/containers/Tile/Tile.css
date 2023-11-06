@@ -19,6 +19,19 @@
   opacity: 1;
 }
 
+.log {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  font-size: 10px;
+  text-align: center;
+  color: white;
+  user-select: none;
+  background-color: black;
+}
+
 @keyframes appearing {
   from {
     opacity: 0;

@@ -12,7 +12,7 @@ export const useDragger = (ref) => {
 
   useEffect(() => {
     const target = ref.current;
-    if (!target) throw new Error("Element with given id doesn't exist");
+    if (!target) throw new Error("Target element doesn't exist");
 
     const container = target.parentElement;
     if (!container) throw new Error("Target element must have a parent");

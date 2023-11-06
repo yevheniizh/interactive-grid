@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useDragger } from "../../hooks/useDragger";
 import { useResizer } from "../../hooks/useResizer";
+import { useLogger } from '../../hooks/useLogger';
 
 import { isVideoUrl } from '../../utils/common.util';
 
@@ -18,6 +19,7 @@ export const Tile = (props) => {
 
   useDragger(ref);
   useResizer(ref);
+  useLogger(ref);
 
   return (
     <div
@@ -26,6 +28,7 @@ export const Tile = (props) => {
       style={props.style}
     >
       <div className="box">
+        <span className='log' />
         <MediaElement url={props.url} ref={mediaRef} />
       </div>
       <ResizeHandler />
