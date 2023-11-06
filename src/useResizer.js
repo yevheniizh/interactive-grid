@@ -6,14 +6,11 @@ function useResizer(ref) {
 
   useEffect(() => {
     const container = ref.current;
-    if (!container) throw new Error("Element with given id doesn't exist");
+    if (!container) throw new Error("Container element doesn't exist");
 
     const [target, resizer] = container.children;
-    if (!target) throw new Error("Target element must have a parent");
-    if (!resizer) throw new Error("Resizer element must have a parent");
-
-    const box = target; // temp
-    const boxWrapper = container; // temp
+    if (!target) throw new Error("Target element doesn't exist");
+    if (!resizer) throw new Error("Resizer element doesn't exist");
   
     // *****
 
@@ -25,21 +22,22 @@ function useResizer(ref) {
         const newW = ( x > e.clientX ) ? ( dims.current.w - xDiff ) : ( dims.current.w + xDiff );
         const newH = ( y > e.clientY ) ? ( dims.current.h - yDiff ) : ( dims.current.h + yDiff );
 
-        boxWrapper.style.width = newW + 'px';
-        // boxWrapper.style.height = newH + 'px';
+        container.style.width = newW + 'px';
+        // container.style.height = newH + 'px';
 
-        { // Keep aspect ratio 
-          boxWrapper.style.height = 'auto'; // 
-          boxWrapper.style.setProperty("aspect-ratio", "1/" + box.naturalHeight / box.naturalWidth);
+        { // To keep aspect ratio
+          container.style.height = 'auto';
+          container.style.setProperty("aspect-ratio", "1/" + target.naturalHeight / target.naturalWidth);
         }
       }
     }
 
     function startResize(e) {
-      resizer.setPointerCapture(e.pointerId);
+      resizer.setPointerCapture(e.pointerId); // important
       drag.current = ({ ...drag.current, active: true, x: e.clientX, y: e.clientY });
-      dims.current = ({ w: box.offsetWidth, h: box.offsetHeight });
+      dims.current = ({ w: target.offsetWidth, h: target.offsetHeight });
     };
+
     function stopResize(e) {
       drag.current = ({ ...drag.current, active: false });
     };
