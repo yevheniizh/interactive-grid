@@ -37,16 +37,41 @@ body {
 }
 
 .tile {
-  position: static;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 20%; /* to have 5 items in a a row */
   height: fit-content;
-  cursor: grab;
   user-select: none;
-  border: 1px solid blue;
+  cursor: grab;
 }
 
-.tile.dragged {
+.tile:active {
+  cursor: grabbing;
+}
+
+.tile:hover .resizer {
+  opacity: 1;
+}
+
+.resizer {
   position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background-color: rgb(31, 137, 229);
+  border-radius: 50%;
+  border: 1px solid white;
+  user-select: none;
+  cursor: auto;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  cursor: se-resize;
+}
+
+.resizer:hover {
+  background-color: rgb(13, 72, 161);
 }
 
 /* <img />, <video /> */
@@ -56,11 +81,13 @@ body {
   height: 100%;
   object-fit: contain;
   user-select: none;
-  border: 1px solid red;
+  z-index: -1;
+}
+
+img.media {
   pointer-events: none;
 }
 
 .media.unmounted {
   display: none;
 }
-  

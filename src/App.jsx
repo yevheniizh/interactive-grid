@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import useDragger from "./useDragger";
+import useResizer from "./useResizer";
 
 import './style.css';
 
@@ -10,8 +11,8 @@ const links = [
   'https://sjc1.vultrobjects.com/moments/ads/square-emoji.png',
   'https://ewr1.vultrobjects.com/moments/videos/car-parts.mp4',
   'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/vbqr.png',
-  'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/coca-cola-short.mp4',
   'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/coca-cola-banner-right.jpg',
+  'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/coca-cola-short.mp4',
 ];
 
 // Draggable
@@ -23,14 +24,15 @@ export const Tile = (props) => {
   return <div className="tile">{props.children}</div>;
 };
 
-export const Canvas = (props) => {
-  return <div className="canvas">{props.children}</div>;
-};
+export const Canvas = React.forwardRef((props, ref) => {
+  return <div className="canvas" ref={ref}>{props.children}</div>;
+} );
 
 // Add strategy for img and video
 export const MediaHolder = (props) => {
   const ref = React.useRef(null);
   const mediaRef = React.useRef(null);
+  const [aspectRatio, setAspectRatio] = React.useState(null);
 
   const videoReg = new RegExp(/https?:\/\/.*\.(?:mp4)/i);
 
@@ -38,8 +40,6 @@ export const MediaHolder = (props) => {
     if (ref.current?.classList.contains('unmounted')) {
       ref.current?.classList.remove('unmounted');
     }
-
-    ref.current?.style.setProperty('aspect-ratio', `${mediaRef.current.naturalWidth} / ${mediaRef.current.naturalHeight}`);
   };
 
   const onError = () => {
@@ -49,40 +49,61 @@ export const MediaHolder = (props) => {
   };
 
   useDragger(ref);
+  useResizer(ref);
 
   return (
     <div
       className="tile"
       ref={ref}
-      onPointerDown={(e) => !e.target.classList.contains('dragged') && e.target.classList.add('dragged')}
+      style={{...props.style, aspectRatio}}
     >
-      {videoReg.test(props.src) ? (
-        <video
-          className="media"
-          src={props.src}
-          onLoad={onLoad}
-          onError={onError}
-          ref={mediaRef}
-        />
-      ) : (
-        <img
-          className="media"
-          src={props.src}
-          onLoad={onLoad}
-          onError={onError}
-          ref={mediaRef}
-        />
-      )}
+      <div className="box">
+        {videoReg.test(props.src) ? (
+          <video
+            className="media"
+            src={props.src}
+            onLoad={onLoad}
+            onError={onError}
+            ref={mediaRef}
+
+            autoPlay
+            muted
+            loop
+            playsInline
+            controls
+          />
+        ) : (
+          <img
+            className="media"
+            src={props.src}
+            onLoad={onLoad}
+            onError={onError}
+            ref={mediaRef}
+          />
+        )}
+      </div>
+        <div className='resizer' />
     </div>
   );
 };
 
 export default function App() {
-  const assets = [];
+  const ref = React.useRef(null);
+  const COLUMNS = 5;
+  const [urls, setUrls] = React.useState(links.slice(5));
 
-  return (
+  return ( 
     <div className="container">
-      <form>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+
+        const url = e.target.url.value;
+
+        if (url) {
+          setUrls((urls) => [...urls, url]);
+          e.target.url.value = '';
+        }
+      }}>
         {/* URL-validation? */}
         <input
           type="url"
@@ -95,14 +116,20 @@ export default function App() {
         <button type="button" disabled>
           Play all
         </button>
+
       </form>
 
-      <Canvas>
-        {assets.map((_, index) => (
-          <Tile key={index} />
+      <Canvas ref={ref}>
+        {urls.map((src, index) => (
+          <MediaHolder
+            src={src}
+            key={src}
+            style={{
+              top: `${(index * (ref.current?.offsetHeight || 0) / COLUMNS)}px`,
+              left: `${(index * (ref.current?.offsetWidth || 0) / COLUMNS)}px`,
+            }}
+          />
         ))}
-
-        <MediaHolder src="https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/vbqr.png" />
       </Canvas>
     </div>
   );

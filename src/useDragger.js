@@ -30,6 +30,7 @@ function useDragger(ref) {
     }
 
     const onMouseMove = (e) => {
+      if (e.target.closest( '.resizer' )) return;
       if (!isClicked.current) return;
 
       const nextX = e.clientX - coords.current.startX + coords.current.lastX;
