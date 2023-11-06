@@ -1,21 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import useDragger from "./useDragger";
 import useResizer from "./useResizer";
-
-import newId from './newid.util.js';
+import { CanvasProvider, useCanvasContext } from './canvasContext';
 
 import './style.css';
-
-const links = [
-  'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/avatar2-trailer-short.mp4',
-  'https://sjc1.vultrobjects.com/moments/demo/retail/1.jpg',
-  'https://sjc1.vultrobjects.com/moments/ads/square-emoji.png',
-  'https://ewr1.vultrobjects.com/moments/videos/car-parts.mp4',
-  'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/vbqr.png',
-  'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/coca-cola-banner-right.jpg',
-  'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/coca-cola-short.mp4',
-];
 
 // Draggable - DONE
 // Resizable - DONE
@@ -27,10 +16,18 @@ export const Tile = (props) => {
 };
 
 export const Canvas = (props) => {
+  const { urls, removeUrl } = useCanvasContext();
+
+  const onRemove = (ID) => {
+    urls.find(({ id }) => id === ID) && removeUrl(ID);
+  }
+
   return (
     <div className="canvas-wrapper">
       <div className="canvas">
-        {props.children}
+        {urls.map(({ id, url }) => (
+          <MediaHolder key={id} id={id} url={url} onRemove={onRemove} />
+        ))}
       </div>
     </div>
   );
@@ -42,7 +39,7 @@ export const MediaHolder = (props) => {
   const mediaRef = React.useRef(null);
 
   const videoRegExp = new RegExp(/https?:\/\/.*\.(?:mp4)/i);
-  const isVideo = videoRegExp.test(props.src);
+  const isVideo = videoRegExp.test(props.url);
 
   const onLoad = () => {
     if (ref.current?.classList.contains('unmounted')) {
@@ -69,7 +66,7 @@ export const MediaHolder = (props) => {
         {isVideo ? (
           <video
             className="media"
-            src={props.src}
+            src={props.url}
             onLoad={onLoad}
             onError={onError}
             ref={mediaRef}
@@ -84,7 +81,7 @@ export const MediaHolder = (props) => {
         ) : (
           <img
             className="media"
-            src={props.src}
+            src={props.url}
             onLoad={onLoad}
             onError={onError}
             ref={mediaRef}
@@ -97,9 +94,9 @@ export const MediaHolder = (props) => {
         onPointerUp={() => {
           if (isVideo) {
             // dispose video from the DOM in right way
-            mediaRef.current?.pause();
-            mediaRef.current?.removeAttribute('src'); // empty source
-            mediaRef.current?.load();
+            mediaRef.current.pause();
+            mediaRef.current.removeAttribute('src'); // empty source
+            mediaRef.current.load();
           }
 
           props.onRemove(props.id);
@@ -112,9 +109,21 @@ export const MediaHolder = (props) => {
 
 export const Form = (props) => {
   const [valid, setValid] = React.useState(false);
+  const { addUrl } = useCanvasContext();
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    const url = e.target.url.value;
+
+    if (url) {
+      addUrl(url);
+      e.target.url.value = '';
+    }
+  };
 
   return (
-    <form onSubmit={props.onSubmit}>
+    <form onSubmit={onSubmit}>
       {/* URL-validation? */}
       <input
         type="url"
@@ -126,44 +135,22 @@ export const Form = (props) => {
         autoFocus
       />
       <button type="sumbit" disabled={!valid}>Add</button>
-      <button type="button" disabled>
+      <button type="button" disabled onPointerUp={() => {
+
+      }}>
         Play all
       </button>
-
     </form>
   );
 };
 
 export default function App() {
-  const [urls, setUrls] = React.useState([
-    [newId(), links[5]],
-    [newId(), links[6]],
-  ]);
-
-  const onRemove = (id) => {
-    urls.find(([id2]) => id === id2) && setUrls((urls) => urls.filter(([id2]) => id !== id2));
-  };
-
   return ( 
-    <div className="container">
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          const url = e.target.url.value;
-
-          if (url) {
-            setUrls((urls) => [...urls, [newId(), url]]);
-            e.target.url.value = '';
-          }
-        }}
-      />
-
-      <Canvas>
-        {urls.map(([id, src], index) => (
-          <MediaHolder id={id} src={src} key={id} onRemove={onRemove} />
-        ))}
-      </Canvas>
-    </div>
+    <CanvasProvider>
+      <div className="container">
+        <Form />
+        <Canvas/>
+      </div>
+    </CanvasProvider>
   );
 }
