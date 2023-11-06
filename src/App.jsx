@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import useDragger from "./useDragger";
 import useResizer from "./useResizer";
 
+import newId from './newid.util.js';
+
 import './style.css';
 
 const links = [
@@ -15,26 +17,32 @@ const links = [
   'https://s3.us-east-2.amazonaws.com/vb-dev-media/moments/ads/reupload/coca-cola-short.mp4',
 ];
 
-// Draggable
-// Resizable
-// Keeps aspect-ratio
-// Deletion?
+// Draggable - DONE
+// Resizable - DONE
+// Keeps aspect-ratio - DONE
+// Deletion? - DONE
 // Contains Log button (x, y, width, height (pixels or %). Alternatively, the information can be display in the UI all the time)
 export const Tile = (props) => {
   return <div className="tile">{props.children}</div>;
 };
 
-export const Canvas = React.forwardRef((props, ref) => {
-  return <div className="canvas" ref={ref}>{props.children}</div>;
-} );
+export const Canvas = (props) => {
+  return (
+    <div className="canvas-wrapper">
+      <div className="canvas">
+        {props.children}
+      </div>
+    </div>
+  );
+};
 
 // Add strategy for img and video
 export const MediaHolder = (props) => {
   const ref = React.useRef(null);
   const mediaRef = React.useRef(null);
-  const [aspectRatio, setAspectRatio] = React.useState(null);
 
-  const videoReg = new RegExp(/https?:\/\/.*\.(?:mp4)/i);
+  const videoRegExp = new RegExp(/https?:\/\/.*\.(?:mp4)/i);
+  const isVideo = videoRegExp.test(props.src);
 
   const onLoad = () => {
     if (ref.current?.classList.contains('unmounted')) {
@@ -55,10 +63,10 @@ export const MediaHolder = (props) => {
     <div
       className="tile"
       ref={ref}
-      style={{...props.style, aspectRatio}}
+      style={props.style}
     >
       <div className="box">
-        {videoReg.test(props.src) ? (
+        {isVideo ? (
           <video
             className="media"
             src={props.src}
@@ -71,6 +79,7 @@ export const MediaHolder = (props) => {
             loop
             playsInline
             controls
+            onClick={(e) => e.preventDefault()}
           />
         ) : (
           <img
@@ -82,53 +91,77 @@ export const MediaHolder = (props) => {
           />
         )}
       </div>
-        <div className='resizer' />
+      <div className='resizer' />
+      <button
+        className='remove'
+        onPointerUp={() => {
+          if (isVideo) {
+            // dispose video from the DOM in right way
+            mediaRef.current?.pause();
+            mediaRef.current?.removeAttribute('src'); // empty source
+            mediaRef.current?.load();
+          }
+
+          props.onRemove(props.id);
+        }}>
+        <span className='remove-icon' />
+      </button>
     </div>
   );
 };
 
+export const Form = (props) => {
+  const [valid, setValid] = React.useState(false);
+
+  return (
+    <form onSubmit={props.onSubmit}>
+      {/* URL-validation? */}
+      <input
+        type="url"
+        name="url"
+        id="url"
+        placeholder="https://example.com"
+        pattern="https://.*"
+        onChange={(e) => e.target.validity.valid && setValid(true)}
+        autoFocus
+      />
+      <button type="sumbit" disabled={!valid}>Add</button>
+      <button type="button" disabled>
+        Play all
+      </button>
+
+    </form>
+  );
+};
+
 export default function App() {
-  const ref = React.useRef(null);
-  const COLUMNS = 5;
-  const [urls, setUrls] = React.useState(links.slice(5));
+  const [urls, setUrls] = React.useState([
+    [newId(), links[5]],
+    [newId(), links[6]],
+  ]);
+
+  const onRemove = (id) => {
+    urls.find(([id2]) => id === id2) && setUrls((urls) => urls.filter(([id2]) => id !== id2));
+  };
 
   return ( 
     <div className="container">
-      <form onSubmit={(e) => {
-        e.preventDefault();
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
 
-        const url = e.target.url.value;
+          const url = e.target.url.value;
 
-        if (url) {
-          setUrls((urls) => [...urls, url]);
-          e.target.url.value = '';
-        }
-      }}>
-        {/* URL-validation? */}
-        <input
-          type="url"
-          name="url"
-          id="url"
-          placeholder="https://example.com"
-          pattern="https://.*"
-        />
-        <button type="sumbit">Add</button>
-        <button type="button" disabled>
-          Play all
-        </button>
+          if (url) {
+            setUrls((urls) => [...urls, [newId(), url]]);
+            e.target.url.value = '';
+          }
+        }}
+      />
 
-      </form>
-
-      <Canvas ref={ref}>
-        {urls.map((src, index) => (
-          <MediaHolder
-            src={src}
-            key={src}
-            style={{
-              top: `${(index * (ref.current?.offsetHeight || 0) / COLUMNS)}px`,
-              left: `${(index * (ref.current?.offsetWidth || 0) / COLUMNS)}px`,
-            }}
-          />
+      <Canvas>
+        {urls.map(([id, src], index) => (
+          <MediaHolder id={id} src={src} key={id} onRemove={onRemove} />
         ))}
       </Canvas>
     </div>

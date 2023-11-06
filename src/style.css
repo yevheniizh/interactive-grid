@@ -26,11 +26,18 @@ body {
   gap: 5px;
 }
 
-.canvas {
+.canvas-wrapper {
   position: relative;
   overflow: hidden;
+  display: flex;
   flex: 1;
   outline: 1px solid red;
+  padding: 10px;
+}
+
+.canvas {
+  position: relative;
+  flex: 1;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -44,13 +51,17 @@ body {
   height: fit-content;
   user-select: none;
   cursor: grab;
+  transform-origin: center;
+  animation: appearing 0.25s ease-out forwards;
+
 }
 
 .tile:active {
   cursor: grabbing;
 }
 
-.tile:hover .resizer {
+.tile:hover .resizer,
+.tile:hover .remove {
   opacity: 1;
 }
 
@@ -64,14 +75,67 @@ body {
   border-radius: 50%;
   border: 1px solid white;
   user-select: none;
-  cursor: auto;
   opacity: 0;
   transition: opacity 0.25s ease-out;
-  cursor: se-resize;
+  cursor: nwse-resize;
 }
 
 .resizer:hover {
   background-color: rgb(13, 72, 161);
+}
+
+.remove {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  background-color: rgb(115, 115, 115);
+  border-radius: 50%;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.remove:hover {
+  background-color: rgb(154, 48, 48);
+}
+
+.remove:active {
+  background-color: rgb(255, 0, 0);
+}
+
+.remove-icon {
+  position: relative;
+  display: block;
+  width: 50%;
+  height: 50%;
+  margin: auto;
+}
+
+.remove-icon:before,
+.remove-icon:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  transform: translateY(-50%);
+  background-color: white;
+}
+
+.remove-icon:before {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.remove-icon:after {
+  transform: translateY(-50%) rotate(-45deg);
 }
 
 /* <img />, <video /> */
@@ -90,4 +154,15 @@ img.media {
 
 .media.unmounted {
   display: none;
+}
+
+@keyframes appearing {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
