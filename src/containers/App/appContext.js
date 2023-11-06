@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from 'react';
+import { useRef, createContext, useContext, useReducer } from 'react';
 
 import { IdUtil } from '../../utils/id.util';
 import { isVideoUrl } from '../../utils/common.util';
@@ -62,6 +62,7 @@ const initialState = {
 
 /* PROVIDER */
 export const AppProvider = ( { children } ) => {
+  const videoRefs = useRef([]);
   const [state, dispatch] = useReducer( reducer, initialState );
 
   const value = {
@@ -74,6 +75,7 @@ export const AppProvider = ( { children } ) => {
 
     // Selectors
     selectVideoUrls: () => state.urls.filter( ( { url } ) => isVideoUrl( url ) ),
+    videoRefs,
    };
 
   return (

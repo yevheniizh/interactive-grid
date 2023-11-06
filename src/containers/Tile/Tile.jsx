@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useDragger } from "../../hooks/useDragger";
 import { useResizer } from "../../hooks/useResizer";
@@ -10,16 +10,26 @@ import { MediaElement } from './components/MediaElement/MediaElement';
 import { RemoveButton } from './components/RemoveButton/RemoveButton';
 import { ResizeHandler } from './components/ResizeHandler/ResizeHandler';
 
+import { useAppContext } from '../App/appContext';
+
 import './Tile.css';
 
 // Add strategy for img and video
 export const Tile = (props) => {
+  const { videoRefs } = useAppContext();
+
   const ref = React.useRef(null);
   const mediaRef = React.useRef(null);
 
   useDragger(ref);
   useResizer(ref);
   useLogger(ref);
+
+  useEffect(() => {
+    if (isVideoUrl(props.url)) {
+      videoRefs.current.push(mediaRef.current);
+    }
+  }, []);
 
   return (
     <div

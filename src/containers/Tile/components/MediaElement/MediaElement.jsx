@@ -21,6 +21,7 @@ const Video = React.forwardRef((props, ref) => {
       {...props}
       ref={ref}
       loop
+      muted
       playsInline
       controls
       onClick={(e) => e.preventDefault()}

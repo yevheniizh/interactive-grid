@@ -4,7 +4,7 @@ import { useAppContext } from '../App/appContext';
 
 export const Form = () => {
   const [valid, setValid] = React.useState(false);
-  const { addUrl, selectVideoUrls } = useAppContext();
+  const { addUrl, videoRefs } = useAppContext();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -29,8 +29,8 @@ export const Form = () => {
         autoFocus
       />
       <button type="sumbit" disabled={!valid}>Add</button>
-      <button type="button" disabled onPointerUp={() => {
-        selectVideoUrls
+      <button type="button" onPointerUp={() => {
+        videoRefs.current.forEach( (node) => node.play() );
       }}>
         Play all
       </button>
