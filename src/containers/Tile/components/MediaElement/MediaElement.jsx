@@ -1,21 +1,25 @@
 import React, { forwardRef } from 'react';
 
-import { useHandleMediaOnReady } from "../../hooks/useHandleMediaOnReady";
+import { useImgLoaded, useVideoLoaded } from "../../hooks/useHandleMediaOnReady";
 
 import { isVideoUrl } from '../../../../utils/common.util';
 
 import './MediaElement.css';
 
 const Image = React.forwardRef((props, ref) => {
+  const { onLoad, onError } = useImgLoaded(ref);
   return (
     <img
       {...props}
+      onLoad={onLoad}
+      onError={onError}
       ref={ref}
     />
   );
 });
 
 const Video = React.forwardRef((props, ref) => {
+  useVideoLoaded(ref);
   return (
     <video
       {...props}
@@ -30,18 +34,13 @@ const Video = React.forwardRef((props, ref) => {
 });
 
 export const MediaElement = forwardRef(({ url, ...props }, ref) => {
-  const { onLoad, onError } = useHandleMediaOnReady(ref);
-
   const Component = isVideoUrl(url) ? Video : Image;
-
   return (
     <Component
       {...props}
       className="media"
       src={url}
       ref={ref}
-      onLoad={onLoad}
-      onError={onError}
     />
   );
 });

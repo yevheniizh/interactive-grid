@@ -8,6 +8,7 @@ export const RemoveButton = (props) => {
   return (
     <button
       className='remove-button'
+      data-draggable='false'
       onPointerUp={() => {
         if (isVideoUrl(props.url)) {
           // dispose video from the DOM in right way

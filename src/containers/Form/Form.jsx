@@ -30,7 +30,7 @@ export const Form = () => {
       />
       <button type="sumbit" disabled={!valid}>Add</button>
       <button type="button" onPointerUp={() => {
-        videoRefs.current.forEach( (node) => node.play() );
+        videoRefs.current.forEach( (node) => node.readyState >= 2 && node.play() );
       }}>
         Play all
       </button>

@@ -33,7 +33,7 @@ export const useResizer = (ref) => {
     }
 
     function startResize(e) {
-      resizer.setPointerCapture(e.pointerId); // important
+      resizer.setPointerCapture(e.pointerId); // IMPORTANT!
       drag.current = ({ ...drag.current, active: true, x: e.clientX, y: e.clientY });
       dims.current = ({ w: target.offsetWidth, h: target.offsetHeight });
     };
