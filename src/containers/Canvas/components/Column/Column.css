@@ -2,6 +2,6 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
   overflow: visible;
 }

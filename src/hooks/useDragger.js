@@ -2,56 +2,58 @@ import { useEffect, useRef } from "react";
 
 export const useDragger = (ref) => {
   const isClicked = useRef(false);
-
-  const coords = useRef({
-    startX: 0,
-    startY: 0,
-    lastX: 0,
-    lastY: 0
-  });
+  const coords = useRef({ x: 0, y: 0, x0: 0, y0: 0 });
 
   useEffect(() => {
-    const target = ref.current;
-    if (!target) throw new Error("useDragger: Target element doesn't exist");
-
-    const container = target.parentElement;
-    if (!container) throw new Error("useDragger: Target element must have a parent");
+    const canvas = ref.current;
 
     const onPointerDown = (e) => {
-      isClicked.current = true;
-      coords.current.startX = e.clientX;
-      coords.current.startY = e.clientY;
-    }
+      const tile = e.target.closest( '.tile' );
 
-    const onPointerUp = (e) => {
-      isClicked.current = false;
-      coords.current.lastX = target.offsetLeft;
-      coords.current.lastY = target.offsetTop;
+      if ( tile ) {
+        isClicked.current = true;
+        coords.current.x = e.clientX;
+        coords.current.y = e.clientY;
+        coords.current.x0 = tile.offsetLeft;
+        coords.current.y0 = tile.offsetTop;
+      }
     }
 
     const onPointerMove = (e) => {
-      if (e.target.closest( '[data-draggable="false"]' )) return;
-      if (!isClicked.current) return;
+      const tile = e.target.closest( '.tile' );
 
-      target.setPointerCapture(e.pointerId); // IMPORTANT!
+      if ( tile ) {
+        if (e.target.closest( '[data-draggable="false"]' )) return;
+        if (!isClicked.current) return;
 
-      const nextX = e.clientX - coords.current.startX + coords.current.lastX;
-      const nextY = e.clientY - coords.current.startY + coords.current.lastY;
+        tile.setPointerCapture(e.pointerId); // IMPORTANT!
 
-      target.style.top = `${nextY}px`;
-      target.style.left = `${nextX}px`;
+        const nextX = e.clientX - coords.current.x + coords.current.x0;
+        const nextY = e.clientY - coords.current.y + coords.current.y0;
+
+        tile.style.top = `${nextY}px`;
+        tile.style.left = `${nextX}px`;
+      }
     }
 
-    target.addEventListener('pointerdown', onPointerDown);
-    target.addEventListener('pointerup', onPointerUp);
-    container.addEventListener('pointermove', onPointerMove);
-    container.addEventListener('pointerleave', onPointerUp);
+    const onPointerUp = (e) => {
+      const tile = e.target.closest( '.tile' );
+
+      if ( tile ) {
+        isClicked.current = false;
+      }
+    }
+
+    canvas.addEventListener('pointerdown', onPointerDown);
+    canvas.addEventListener('pointermove', onPointerMove);
+    canvas.addEventListener('pointerup', onPointerUp);
+    canvas.addEventListener('pointerleave', onPointerUp);
 
     return () => {
-      target.removeEventListener('pointerdown', onPointerDown);
-      target.removeEventListener('pointerup', onPointerUp);
-      container.removeEventListener('pointermove', onPointerMove);
-      container.removeEventListener('pointerleave', onPointerUp);
+      canvas.removeEventListener('pointerdown', onPointerDown);
+      canvas.removeEventListener('pointermove', onPointerMove);
+      canvas.removeEventListener('pointerup', onPointerUp);
+      canvas.removeEventListener('pointerleave', onPointerUp);
     };
   }, []);
 }

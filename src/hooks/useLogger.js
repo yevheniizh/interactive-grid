@@ -2,24 +2,31 @@ import { useEffect } from "react";
 
 export const useLogger = (ref) => {
   useEffect(() => {
-    const target = ref.current;
-    if (!target) throw new Error("useLogger: Target element doesn't exist");
+    const canvas = ref.current;
 
-    const log = target.querySelector('.log');
-    if (!log) throw new Error("useLogger: Log element doesn't exist");
-
-    const { top, left } = target.getBoundingClientRect();
-    log.innerHTML = `x: ${left.toFixed()} y: ${top.toFixed()} w: ${target.offsetWidth} h: ${target.offsetHeight}`;
+    const tiles = canvas.querySelectorAll( '.tile' );
+    tiles.forEach( (tile) => {
+      const log = tile?.querySelector('.log');
+      if ( log ) {
+        const { top, left } = tile.getBoundingClientRect();
+        log.innerHTML = `x: ${left.toFixed()} y: ${top.toFixed()} w: ${tile.offsetWidth} h: ${tile.offsetHeight}`;
+      }
+    });
 
     const onMouseMove = (e) => {
-      const { top, left } = target.getBoundingClientRect();
-      log.innerHTML = `x: ${left.toFixed()} y: ${top.toFixed()} w: ${target.offsetWidth} h: ${target.offsetHeight}`;
+      const tile = e.target.closest( '.tile' );
+      const log = tile?.querySelector('.log');
+
+      if ( tile && log ) {
+        const { top, left } = tile.getBoundingClientRect();
+        log.innerHTML = `x: ${left.toFixed()} y: ${top.toFixed()} w: ${tile.offsetWidth} h: ${tile.offsetHeight}`;
+      }
     }
 
-    target.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mousemove', onMouseMove);
 
     return () => {
-      target.removeEventListener('mousemove', onMouseMove);
+      canvas.removeEventListener('mousemove', onMouseMove);
     };
   }, []);
 }
