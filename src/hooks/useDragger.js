@@ -12,23 +12,21 @@ export const useDragger = (ref) => {
 
   useEffect(() => {
     const target = ref.current;
-    if (!target) throw new Error("Target element doesn't exist");
+    if (!target) throw new Error("useDragger: Target element doesn't exist");
 
     const container = target.parentElement;
-    if (!container) throw new Error("Target element must have a parent");
+    if (!container) throw new Error("useDragger: Target element must have a parent");
 
     const onPointerDown = (e) => {
       isClicked.current = true;
       coords.current.startX = e.clientX;
       coords.current.startY = e.clientY;
-      target.style.zIndex = 1000;
     }
 
     const onPointerUp = (e) => {
       isClicked.current = false;
       coords.current.lastX = target.offsetLeft;
       coords.current.lastY = target.offsetTop;
-      target.style.zIndex = 100;
     }
 
     const onPointerMove = (e) => {

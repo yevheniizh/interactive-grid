@@ -37,10 +37,11 @@ export const Tile = (props) => {
       <div
         className={[
           "tile",
-          props.mounted ? "" : "unmounted", // However, on unmounted the empty space is reserved.
+          props.mounted ? "" : "unmounted", // However, The empty space is always reserved on.
         ].join(' ')}
         ref={ref}
         style={props.style}
+        onPointerDown={props.onPointerDown}
       >
         <div className="box">
           <span className='log' />

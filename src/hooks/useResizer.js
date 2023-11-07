@@ -6,11 +6,11 @@ export const useResizer = (ref) => {
 
   useEffect(() => {
     const container = ref.current;
-    if (!container) throw new Error("Container element doesn't exist");
+    if (!container) throw new Error("useResizer: Container element doesn't exist");
 
     const [target, resizer] = container.children;
-    if (!target) throw new Error("Target element doesn't exist");
-    if (!resizer) throw new Error("Resizer element doesn't exist");
+    if (!target) throw new Error("useResizer: Target element doesn't exist");
+    if (!resizer) throw new Error("useResizer: Resizer element doesn't exist");
   
     // *****
 
