@@ -8,10 +8,12 @@ export const useLogger = (ref) => {
     const log = target.querySelector('.log');
     if (!log) throw new Error("Log element doesn't exist");
 
-    log.innerHTML = `x: ${target.offsetLeft} y: ${target.offsetTop} w: ${target.offsetWidth} h: ${target.offsetHeight}`;
+    const { top, left } = target.getBoundingClientRect();
+    log.innerHTML = `x: ${left.toFixed()} y: ${top.toFixed()} w: ${target.offsetWidth} h: ${target.offsetHeight}`;
 
     const onMouseMove = (e) => {
-      log.innerHTML = `x: ${target.offsetLeft} y: ${target.offsetTop} w: ${target.offsetWidth} h: ${target.offsetHeight}`;
+      const { top, left } = target.getBoundingClientRect();
+      log.innerHTML = `x: ${left.toFixed()} y: ${top.toFixed()} w: ${target.offsetWidth} h: ${target.offsetHeight}`;
     }
 
     target.addEventListener('mousemove', onMouseMove);

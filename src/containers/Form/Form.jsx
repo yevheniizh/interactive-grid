@@ -2,8 +2,9 @@ import React from 'react';
 
 import { useAppContext } from '../App/appContext';
 
+import './Form.css';
+
 export const Form = () => {
-  const [valid, setValid] = React.useState(false);
   const { addUrl, videoRefs } = useAppContext();
 
   const onSubmit = (e) => {
@@ -17,22 +18,36 @@ export const Form = () => {
     }
   };
 
+  const handleInputValidity = (e) => {
+    e.preventDefault();
+    e.target.setCustomValidity(''); // reset custom validity error
+    !e.target.checkValidity() && (
+      e.target.setCustomValidity('Enter the URL address in format "https://.*.(mp4|webm|jpg|jpeg|png)"')
+    );
+  };
+
   return (
-    <form onSubmit={onSubmit}>
+    <form className='form' onSubmit={onSubmit}>
       <input
+        className='input'
         type="url"
         name="url"
         id="url"
-        placeholder="https://example.com"
-        pattern="https://.*"
-        onChange={(e) => e.target.validity.valid && setValid(true)}
+        placeholder="https://example.com/filename.mp4..."
+        pattern="https://.*.(mp4|webm|jpg|jpeg|png)"
+        onChange={handleInputValidity}
         autoFocus
+        autoComplete='off'
       />
-      <button type="sumbit" disabled={!valid}>Add</button>
-      <button type="button" onPointerUp={() => {
-        videoRefs.current.forEach( (node) => node.readyState >= 2 && node.play() );
+      <button className="submit-button" type="sumbit">Add</button>
+      <button className="play-all-videos-button" type="button"onClick={() => {
+        videoRefs.current.forEach( (node) => {
+          if(node.readyState >= 2) {
+            node.paused ? node.play() : node.pause();
+          }
+        });
       }}>
-        Play all
+        Play/pause all videos
       </button>
     </form>
   );

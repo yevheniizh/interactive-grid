@@ -1,0 +1,66 @@
+.form {
+  height: 60px;
+  margin-bottom: 10px;
+  padding: 10px;
+  overflow: scroll;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(33, 33, 33, 0.25);
+  border-radius: 5px;
+  display: flex;
+  gap: 10px;
+}
+
+.input {
+  padding: 0 5px;
+  font-size: 20px;
+  border: 2px solid rgba(31, 137, 229, 0.4);
+  border-radius: 5px;
+  outline: none;
+  flex: 1;
+}
+
+.input:focus {
+  border: 2px solid rgba(31, 137, 229, 1);
+}
+
+button {
+  width: 200px;
+  cursor: pointer;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.submit-button {
+  background-color: rgb(31, 137, 229);
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: rgb(31, 137, 229, 0.8);
+}
+
+.submit-button:active {
+  background-color: rgb(31, 137, 229, 0.6);
+}
+
+.play-all-videos-button {
+  border: 2px solid gray;
+  color: rgb(74, 74, 74);
+}
+
+.play-all-videos-button:hover {
+  border: 2px solid rgba(128, 128, 128, 0.5);
+  background-color: rgba(128, 128, 128, 0.5);
+  color: white;
+}
+
+.play-all-videos-button:active {
+  background-color: rgba(128, 128, 128, 0.5);
+  border: 2px solid rgb(74, 74, 74);
+  color: white;
+}
